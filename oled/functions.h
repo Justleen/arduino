@@ -138,11 +138,10 @@ double avergearray(int* arr, int number){
   return avg;
 }
 
-void getpH()
-{
+void getpH() {
   static unsigned long samplingTime = millis();
   static unsigned long printTime = millis();
-  static float pHValue,voltage;
+
   if(millis()-samplingTime > samplingInterval)
   {
       pHArray[pHArrayIndex++]=analogRead(SensorPin);
@@ -151,14 +150,4 @@ void getpH()
       pHValue =  22.06  - 6  * voltage;
       samplingTime=millis();
   }
-  if(millis() - printTime > printInterval)   //Every 800 milliseconds, print a numerical, convert the state of the LED indicator
-  {
-	Serial.print("Voltage:");
-        Serial.print(voltage,2);
-        Serial.print("    pH value: ");
-	Serial.println(pHValue,2);
-        digitalWrite(LED,digitalRead(LED)^1);
-        printTime=millis();
-  }
-  return voltage, pHValue;
 }

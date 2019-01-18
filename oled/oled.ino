@@ -14,6 +14,16 @@ void setup(void) {
 }
 
 void loop(void) {
+  sensors.requestTemperatures(); // Send the command to get temperatures
+  Serial.print("Temperature for the device 1 (index 0) is: ");
+  Serial.println(sensors.getTempCByIndex(0));
+
+  getpH();
+  Serial.print("Voltage:");
+        Serial.print(voltage,2);
+        Serial.print("    pH value: ");
+  Serial.println(pHValue,2);
+
   u8g2.firstPage();
   do {
 
@@ -23,7 +33,11 @@ void loop(void) {
     u8g2.print(F("pH")); 
     u8g2.setFont(u8g2_font_profont22_tf );
     u8g2.setCursor(64, 20);
-    u8g2.print(value, digits);
+    u8g2.print(pHValue, digits);
+    //voltage
+    u8g2.setFont(u8g2_font_5x7_mr);
+    u8g2.setCursor(0, 30);
+    u8g2.print(voltage, digits);
     
     // Temp
     sensors.requestTemperatures();
@@ -46,7 +60,8 @@ void loop(void) {
     }
 
   } while ( u8g2.nextPage() );
-  ntpDate();
-  delay(1000);
+  // ntpDate();
+
+  delay(1500);
 
 }

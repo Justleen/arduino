@@ -38,6 +38,10 @@ WiFiUDP udp;
 #define samplingInterval 20
 #define printInterval 800
 #define ArrayLenth  40    //times of collection
+#define SensorPin A0            //pH meter Analog output to Arduino Analog Input 0
 int pHArray[ArrayLenth];   //Store the average value of the sensor feedback
 int pHArrayIndex=0;   
-#define SensorPin A0            //pH meter Analog output to Arduino Analog Input 0
+static float pHValue,voltage;
+
+
+#include "functions.h"

@@ -84,6 +84,7 @@ void loop(void)
         printTime=millis();
   }
 }
+
 double avergearray(int* arr, int number){
   int i;
   int max,min;
