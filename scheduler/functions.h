@@ -1,6 +1,7 @@
 
 
-double avergearray(int* arr, int number){
+double avergearray(int* arr, int number)
+{
   int i;
   int max,min;
   double avg;
@@ -39,8 +40,8 @@ double avergearray(int* arr, int number){
   return avg;
 }
 
-float getpH() {
-  float pHValue,voltage;
+float getpH()
+{
   for (int i=0; i <= int(ArrayLenth); i++)
   {
       pHArray[pHArrayIndex++]=analogRead(SensorPin);
@@ -49,11 +50,12 @@ float getpH() {
       pHValue =  22.06  - 6  * voltage;
       delay(int(samplingInterval));
   }
-  return pHValue;
+  // return pHValue;
 }
 
-void drawDisplay(float temperature, float pHValue, float voltage, int WiFiStatus) {
-    u8g2.firstPage();
+void drawDisplay(float temperature, float pHValue, float voltage, int WiFiStatus) 
+{
+  u8g2.firstPage();
   do {
 
     // pH
