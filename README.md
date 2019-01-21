@@ -1,4 +1,4 @@
-# arduino
+# arduino IDE, ESP8266 Board
 
 Wemos D1 mini "aquaphonics" pH meter, temperature, Wifi, NTP, OLED
 
