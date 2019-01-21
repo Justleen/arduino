@@ -1,14 +1,15 @@
 void setup () 
 {
   Serial.begin(115200);
+  // create flash
   EEPROM.begin(EEPROMSize);
+  // onewire
   sensors.begin();
-  Serial.println("Scheduler TEST");
-  
+  //oled
   u8g2.begin();
-  Serial.println("starting Display");
+  //taskScheduler
   runner.init();
-  Serial.println("Initialized scheduler");
+  
   
   runner.addTask(pH);
   Serial.println("added pH");
