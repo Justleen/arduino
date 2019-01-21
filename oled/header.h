@@ -5,6 +5,7 @@
 #include <WiFiUdp.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <EEPROM.h>
 
 // temperatue DS18
 #define ONE_WIRE_BUS 2

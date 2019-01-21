@@ -1,7 +1,7 @@
 #include "header.h"
 
-float value=6.13;
-int digits=2;
+
+int digits=1;
 
 
 void setup(void) {
@@ -11,18 +11,14 @@ void setup(void) {
   udp.begin(localPort);
   u8g2.begin();
   sensors.begin();
+  EEPROM.begin(1);
 }
 
 void loop(void) {
-  sensors.requestTemperatures(); // Send the command to get temperatures
-  Serial.print("Temperature for the device 1 (index 0) is: ");
-  Serial.println(sensors.getTempCByIndex(0));
+  EEPROM.put(1, 0);
 
-  getpH();
-  Serial.print("Voltage:");
-        Serial.print(voltage,2);
-        Serial.print("    pH value: ");
-  Serial.println(pHValue,2);
+  // getpH();
+
 
   u8g2.firstPage();
   do {
@@ -37,6 +33,8 @@ void loop(void) {
     //voltage
     u8g2.setFont(u8g2_font_5x7_mr);
     u8g2.setCursor(0, 30);
+    u8g2.print(F("Voltage"));
+    u8g2.setCursor(64, 30);
     u8g2.print(voltage, digits);
     
     // Temp
