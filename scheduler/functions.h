@@ -1,4 +1,19 @@
 
+void writeEEPROM(float input, int addr)
+{
+  EEPROM.begin(EEPROMSize);
+  EEPROM.put(addr, input);
+  EEPROM.end();
+}
+
+float readEEPROM(int addr)
+{
+  float value;
+  EEPROM.begin(EEPROMSize);
+  EEPROM.get(addr, value );
+  EEPROM.end();
+  Serial.println(value);
+}
 
 double avergearray(int* arr, int number)
 {
@@ -47,6 +62,8 @@ float getpH()
       pHArray[pHArrayIndex++]=analogRead(SensorPin);
       if(pHArrayIndex==ArrayLenth)pHArrayIndex=0;
       voltage = avergearray(pHArray, ArrayLenth)*3.2/1023;
+      // pHx = pH1 + (Ex – E1)*(pH2 – pH1)/(E2-E1)
+      // pHValue = sampleOne + (y - voltsampleOne ) * (sampleTwo - sampleOne) / ( voltsampleTwo - voltpHSeven)
       pHValue =  22.06  - 6  * voltage;
       delay(int(samplingInterval));
   }

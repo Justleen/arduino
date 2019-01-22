@@ -5,11 +5,8 @@
  
 #include "header.h"
 #include "functions.h"
+#include "tasks.h"
 
-// Callback methods prototypes
-void pHCallback();
-void displayCallback();
-void temperatureCallback();
 
 //Tasks
 Task pH(10000, TASK_FOREVER, &pHCallback);
@@ -19,32 +16,34 @@ Task Temp(10000,  TASK_FOREVER, &temperatureCallback);
 Scheduler runner;
 
 
-void pHCallback()
+void setup () 
 {
-  getpH();
-  Serial.print("pH is: ");
-  Serial.println(pHValue);
+  Serial.begin(115200);
+  // create flash
+  // onewire
+  sensors.begin();
+  //oled
+  u8g2.begin();
+  //taskScheduler
+  runner.init();
+  
+  
+  runner.addTask(pH);
+  runner.addTask(Display);
+  runner.addTask(Temp);
+  Serial.println("added Tasks");
+  
+  delay(2000);
+
+  pH.enable();
+  Display.enable();
+  Temp.enable();
+  Serial.println("Enabled Tasks");
+  writeEEPROM(pHValue, 0);
 }
-
-void temperatureCallback()
-{
-  // Temp
-  sensors.requestTemperatures();
-  temperature = sensors.getTempCByIndex(0);
-}
-
-
-void displayCallback()
-{
-  drawDisplay( temperature,  pHValue,  voltage,  WiFiStatus);
-  Serial.println("Updating Display");
-}
-
-
-#include "setup.h"
-
 
 void loop ()
 {
   runner.execute();
+  readEEPROM(0);
 }
