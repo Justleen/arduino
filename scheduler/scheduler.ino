@@ -8,42 +8,40 @@
 #include "tasks.h"
 
 
-//Tasks
-Task pH(10000, TASK_FOREVER, &pHCallback);
-Task Display(5000, TASK_FOREVER, &displayCallback);
-Task Temp(10000,  TASK_FOREVER, &temperatureCallback);
-
 Scheduler runner;
+//Tasks
+Task pH(10000, TASK_FOREVER, &pHCallback, &runner, true);
+Task Display(5000, TASK_FOREVER, &displayCallback,  &runner, true);
+Task Temp(10000,  TASK_FOREVER, &temperatureCallback,  &runner, true);
+Task WiFiConnect(1000, TASK_FOREVER, &WiFiCallback,  &runner, true);
+Task NTP(10000,  TASK_FOREVER, &NTPCallback);
+
+
 
 
 void setup () 
 {
   Serial.begin(115200);
-  // create flash
   // onewire
   sensors.begin();
   //oled
   u8g2.begin();
   //taskScheduler
-  runner.init();
+  runner.startNow();
+  // runner.init();
   
   
-  runner.addTask(pH);
-  runner.addTask(Display);
-  runner.addTask(Temp);
-  Serial.println("added Tasks");
-  
-  delay(2000);
 
-  pH.enable();
-  Display.enable();
-  Temp.enable();
-  Serial.println("Enabled Tasks");
-  writeEEPROM(pHValue, 0);
+  
+  int addr = 0;
+  float pHValueEEPROM = readEEPROM(addr);
+  if ( pHValueEEPROM != 0 )
+  {
+    writeEEPROM(7.0, addr);
+  }
 }
 
 void loop ()
 {
   runner.execute();
-  readEEPROM(0);
 }

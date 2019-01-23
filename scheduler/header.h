@@ -8,6 +8,27 @@
 #include <EEPROM.h>
 #include <TaskScheduler.h>
 
+//WiFi
+#ifndef STASSID
+#define STASSID "koepelnet"
+#define STAPSK  "fluffy22"
+#endif
+const char* ssid     = STASSID;
+const char* password = STAPSK;
+
+
+//NTP
+unsigned int localPort = 2390;      // local port to listen for UDP packets
+/* Don't hardwire the IP address or we won't get the benefits of the ntp pool.
+    Lookup the IP address for the host name instead */
+IPAddress timeServerIP; // time.nist.gov NTP server address
+const char* ntpServerName = "0.pool.ntp.org";
+const int NTP_PACKET_SIZE = 48; // NTP time stamp is in the first 48 bytes of the message
+byte packetBuffer[ NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
+// A UDP instance to let us send and receive packets over UDP
+WiFiUDP udp;
+
+ 
 // temperatue DS18
 #define ONE_WIRE_BUS 2
 OneWire oneWire(ONE_WIRE_BUS);
@@ -31,4 +52,12 @@ float pHValue;
 float voltage;
 int WiFiStatus = 0;
 
+
+// EEPROM
 int EEPROMSize = 512;
+
+struct EEPROMObject {
+  float pH;
+  float voltage;
+  char name[10];
+};

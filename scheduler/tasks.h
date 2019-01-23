@@ -20,9 +20,28 @@ void temperatureCallback()
   Serial.println(temperature);
 }
 
-
 void displayCallback()
 {
   drawDisplay( temperature,  pHValue,  voltage,  WiFiStatus);
   Serial.println("Updating Display");
+}
+
+void WiFiCallback()
+{
+	if (WiFi.status() != WL_CONNECTED) {
+      	Serial.println("no wifi, connecting");
+		connectWiFi();
+    } else {
+      Serial.println(WiFi.localIP());
+    }
+
+}
+void NTPCallback()
+{
+	ntpDate();
+}
+
+void readEEPROMCallback()
+{
+	readEEPROM(0);
 }
