@@ -27,6 +27,7 @@ const int NTP_PACKET_SIZE = 48; // NTP time stamp is in the first 48 bytes of th
 byte packetBuffer[ NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP udp;
+int NTPDELAY = 1000 ;
 
  
 // temperatue DS18
