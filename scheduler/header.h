@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
 #include <Wire.h>
+#include <Adafruit_ADS1015.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <OneWire.h>
@@ -11,6 +12,9 @@
 #include <sys/time.h>                   // struct timeval
 #include <coredecls.h>                  // settimeofday_cb()
 
+//ADS1115
+ Adafruit_ADS1115 ads;
+ 
 //WiFi
 #ifndef STASSID
 #define STASSID "koepelnet"

@@ -66,15 +66,31 @@ float getpH()
 {
   for (int i=0; i <= int(ArrayLenth); i++)
   {
-      pHArray[pHArrayIndex++]=analogRead(SensorPin);
+      // pHArray[pHArrayIndex++]=analogRead(SensorPin);
+      pHArray[pHArrayIndex++]=ads.readADC_SingleEnded(0);;
+
+
       if(pHArrayIndex==ArrayLenth)pHArrayIndex=0;
-      voltage = avergearray(pHArray, ArrayLenth)*3.2/1023;
+      // voltage = avergearray(pHArray, ArrayLenth)*3.2/1023;
+      voltage = (avergearray(pHArray, ArrayLenth)*3.2)/1000;
+
+
       // pHx = pH1 + (Ex – E1)*(pH2 – pH1)/(E2-E1)
       // pHValue = sampleOne + (y - voltsampleOne ) * (sampleTwo - sampleOne) / ( voltsampleTwo - voltpHSeven)
       pHValue =  22.06  - 6  * voltage;
       delay(int(samplingInterval));
   }
   // return pHValue;
+  // int16_t adc0;
+
+  // adc0 = ads.readADC_SingleEnded(0);
+ 
+  // Serial.print("AIN0: "); Serial.println(adc0);
+  // voltage = (adc0 * 0.1875)/1000;
+  // pHValue =  22.06  - 6  * voltage;
+  // Serial.print("AIN0 V: "); Serial.println(voltage); 
+  // Serial.print("AIN0 pH: "); Serial.println(voltage); 
+  // Serial.println(" ");
 }
 
 void drawDisplay(float temperature, float pHValue, float voltage, int WiFiStatus) 

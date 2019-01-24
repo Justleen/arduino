@@ -14,7 +14,8 @@ void setup ()
   //NTP
   settimeofday_cb(time_is_set);
   configTime(TZ_SEC, DST_SEC, "pool.ntp.org");
-
+  //ADS115
+  ads.begin();
   // onewire
   sensors.begin();
   //oled
