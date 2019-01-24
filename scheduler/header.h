@@ -7,6 +7,9 @@
 #include <DallasTemperature.h>
 #include <EEPROM.h>
 #include <TaskScheduler.h>
+#include <time.h>                       // time() ctime()
+#include <sys/time.h>                   // struct timeval
+#include <coredecls.h>                  // settimeofday_cb()
 
 //WiFi
 #ifndef STASSID
@@ -18,17 +21,18 @@ const char* password = STAPSK;
 
 
 //NTP
-unsigned int localPort = 2390;      // local port to listen for UDP packets
-/* Don't hardwire the IP address or we won't get the benefits of the ntp pool.
-    Lookup the IP address for the host name instead */
-IPAddress timeServerIP; // time.nist.gov NTP server address
-const char* ntpServerName = "0.pool.ntp.org";
-const int NTP_PACKET_SIZE = 48; // NTP time stamp is in the first 48 bytes of the message
-byte packetBuffer[ NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
-// A UDP instance to let us send and receive packets over UDP
-WiFiUDP udp;
-int NTPDELAY = 1000 ;
-
+#define TZ              0       // (utc+) TZ in hours
+#define DST_MN          60      // use 60mn for summer time in some countries
+#define TZ_MN           ((TZ)*60)
+#define TZ_SEC          ((TZ)*3600)
+#define DST_SEC         ((DST_MN)*60)
+timeval cbtime;			// time set in callback
+bool cbtime_set = false;
+timeval tv;
+timespec tp;
+time_t now;
+uint32_t now_ms, now_us;
+int NTPDELAY= 10000;
  
 // temperatue DS18
 #define ONE_WIRE_BUS 2

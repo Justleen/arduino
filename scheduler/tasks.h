@@ -12,7 +12,7 @@ Scheduler runner;
 Task pH(10000, TASK_FOREVER, &pHCallback, &runner, true);
 Task Display(5000, TASK_FOREVER, &displayCallback,  &runner, true);
 Task Temp(10000,  TASK_FOREVER, &temperatureCallback,  &runner, true);
-Task WiFiConnect(1000, TASK_FOREVER, &WiFiCallback,  &runner, true);
+Task WiFiConnect(10000, TASK_FOREVER, &WiFiCallback,  &runner, true);
 Task NTP(NTPDELAY,  TASK_FOREVER, &NTPCallback);
 
 
@@ -41,21 +41,59 @@ void displayCallback()
 void NTPCallback()
 {
   if (WiFi.status() == WL_CONNECTED) {
-    //get a random server from the pool
-    WiFi.hostByName(ntpServerName, timeServerIP);
+  gettimeofday(&tv, nullptr);
+  // clock_gettime(0, &tp);
+  now = time(nullptr);
+  now_ms = millis();
+  now_us = micros();
 
-    sendNTPpacket(timeServerIP); // send an NTP packet to a time server
-    // wait to see if a reply is available
-    setCallback(&displayCallback);
-    delay(2000);
-   
-    ntpDate();
-  } else {
-    runner.addTask(WiFiConnect);
-    WiFiConnect.enable();
-    runner.deleteTask(NTP);
+  // localtime / gmtime every second change
+  static time_t lastv = 0;
+  if (lastv != tv.tv_sec) {
+    lastv = tv.tv_sec;
+    Serial.println();
+    printTm("localtime", localtime(&now));
+    Serial.println();
+    printTm("gmtime   ", gmtime(&now));
+    Serial.println();
+    Serial.println();
   }
+
+  // time from boot
+  Serial.print("clock:");
+  Serial.print((uint32_t)tp.tv_sec);
+  Serial.print("/");
+  Serial.print((uint32_t)tp.tv_nsec);
+  Serial.print("ns");
+
+  // time from boot
+  Serial.print(" millis:");
+  Serial.print(now_ms);
+  Serial.print(" micros:");
+  Serial.print(now_us);
+
+  // EPOCH+tz+dst
+  Serial.print(" gtod:");
+  Serial.print((uint32_t)tv.tv_sec);
+  Serial.print("/");
+  Serial.print((uint32_t)tv.tv_usec);
+  Serial.print("us");
+
+  // EPOCH+tz+dst
+  Serial.print(" time:");
+  Serial.print((uint32_t)now);
+
+  // human readable
+  Serial.print(" ctime:(UTC+");
+  Serial.print((uint32_t)(TZ * 60 + DST_MN));
+  Serial.print("mn)");
+  Serial.print(ctime(&now));
+
+  // simple drifting loop
+  delay(1000);
+ }
 }
+
 
 void WiFiCallback()
 {
