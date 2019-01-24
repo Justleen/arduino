@@ -40,16 +40,15 @@ void displayCallback()
 
 void NTPCallback()
 {
-  if (WiFi.status() == WL_CONNECTED) {
+  // if (WiFi.status() == WL_CONNECTED) {
   gettimeofday(&tv, nullptr);
-  // clock_gettime(0, &tp);
   now = time(nullptr);
   now_ms = millis();
   now_us = micros();
 
   // localtime / gmtime every second change
   static time_t lastv = 0;
-  if (lastv != tv.tv_sec) {
+  // if (lastv != tv.tv_sec) {
     lastv = tv.tv_sec;
     Serial.println();
     printTm("localtime", localtime(&now));
@@ -57,7 +56,7 @@ void NTPCallback()
     printTm("gmtime   ", gmtime(&now));
     Serial.println();
     Serial.println();
-  }
+  // }
 
   // time from boot
   Serial.print("clock:");
@@ -89,9 +88,13 @@ void NTPCallback()
   Serial.print("mn)");
   Serial.print(ctime(&now));
 
-  // simple drifting loop
-  delay(1000);
- }
+  // if no wifi, stop ntping
+ // }
+ // else {
+ // 	runner.addTask(WiFiConnect);
+ // 	WiFiConnect.enable();
+ // 	runner.deleteTask(NTP);
+ // }
 }
 
 

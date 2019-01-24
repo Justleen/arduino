@@ -32,7 +32,8 @@ timeval tv;
 timespec tp;
 time_t now;
 uint32_t now_ms, now_us;
-int NTPDELAY= 10000;
+int NTPDELAY= 60000;
+struct tm * timeinfo;
  
 // temperatue DS18
 #define ONE_WIRE_BUS 2

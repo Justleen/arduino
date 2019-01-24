@@ -113,11 +113,12 @@ void drawDisplay(float temperature, float pHValue, float voltage, int WiFiStatus
     } else {
       u8g2.print(WiFi.localIP());
     }
-  //   if (WiFiStatus != 0) {
-  //     u8g2.print("no wifi");
-  //   } else {
-  //     u8g2.print(millis());
-  //   }
+    u8g2.setCursor(100, 64);
+    timeinfo = localtime(&now);
+    u8g2.print(timeinfo->tm_hour );
+    u8g2.print(":" );
+    u8g2.print(timeinfo->tm_min );
+
 
   } while ( u8g2.nextPage() );
 }

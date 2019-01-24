@@ -14,8 +14,7 @@ void setup ()
   //NTP
   settimeofday_cb(time_is_set);
   configTime(TZ_SEC, DST_SEC, "pool.ntp.org");
-  // for testing purpose:
-  // extern "C" int clock_gettime(clockid_t unused, struct timespec *tp);
+
   // onewire
   sensors.begin();
   //oled
@@ -26,7 +25,7 @@ void setup ()
   
   int addr = 0;
   float pHValueEEPROM = readEEPROM(addr);
-  if ( pHValueEEPROM != 0 )
+  if ( pHValueEEPROM != 7.0 )
   {
     writeEEPROM(7.0, addr);
   }
