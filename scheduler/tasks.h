@@ -6,6 +6,7 @@ void NTPCallback();
 void temperatureCallback();
 void pHCallback();
 void displayCallback();
+void influxCallback();
 
 Scheduler runner;
 //Tasks
@@ -18,9 +19,16 @@ Task NTP(NTPDELAY,  TASK_FOREVER, &NTPCallback);
 
 void pHCallback()
 {
-  getpH();
-  Serial.print("pH is: ");
-  Serial.println(pHValue);
+	getpH();
+	int16_t raw = ads.readADC_SingleEnded(0);
+	Serial.print("Raw:");
+	Serial.println(raw);
+	Serial.print("voltage:");
+	Serial.println(voltage, 4);
+	Serial.print("pH: ");
+	Serial.println(pHValue);
+	writeinflux("pH", pHValue);
+	writeinflux("pHVoltage", voltage);
 }
 
 void temperatureCallback()
@@ -30,6 +38,8 @@ void temperatureCallback()
   temperature = sensors.getTempCByIndex(0);
   Serial.print("temperature is: ");
   Serial.println(temperature);
+  writeinflux("temperature", temperature);
+
 }
 
 void displayCallback()
@@ -115,4 +125,3 @@ void readEEPROMCallback()
 {
   readEEPROM(0);
 }
-

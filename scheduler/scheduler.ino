@@ -8,14 +8,19 @@
 #include "tasks.h"
 
 
+
 void setup () 
 {
+  influx.setDb(INFLUXDB_DATABASE);
+
+  
   Serial.begin(115200);
   //NTP
   settimeofday_cb(time_is_set);
   configTime(TZ_SEC, DST_SEC, "pool.ntp.org");
   //ADS115
   ads.begin();
+  ads.setGain(GAIN_ONE);       
   // onewire
   sensors.begin();
   //oled

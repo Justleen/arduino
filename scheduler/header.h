@@ -11,9 +11,13 @@
 #include <time.h>                       // time() ctime()
 #include <sys/time.h>                   // struct timeval
 #include <coredecls.h>                  // settimeofday_cb()
+#include <InfluxDb.h>
 
 //ADS1115
- Adafruit_ADS1115 ads;
+Adafruit_ADS1115 ads;
+float gainFactor = 0.125;
+
+
  
 //WiFi
 #ifndef STASSID
@@ -22,6 +26,7 @@
 #endif
 const char* ssid     = STASSID;
 const char* password = STAPSK;
+int WiFiStatus = 0;
 
 
 //NTP
@@ -51,17 +56,29 @@ DallasTemperature sensors(&oneWire);
 #define SensorPin A0            //pH meter Analog output to Arduino Analog Input 0
 int pHArray[ArrayLenth];   //Store the average value of the sensor feedback
 int pHArrayIndex=0;   
+//globals ( OO would be nice... )
+float temperature;
+float pHValue;
+float voltage;
+int raw;
+
 
 // oled
 U8G2_SH1106_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 int digits = 1; // number of decimals
 
-//globals ( OO would be nice... )
-float temperature;
-float pHValue;
-float voltage;
-int WiFiStatus = 0;
+//Influx
+// #define INFLUXDB_HOST "monitoring.aardehuis.nl"
+#define INFLUXDB_HOST "192.168.178.169"
+#define INFLUXDB_PORT "8086"
+#define INFLUXDB_DATABASE "test"
+#define INFLUXDB_USER  "leen"
+#define INFLUXDB_PASS  "ppQNwwOXN005kwgO94NC"
+Influxdb influx(INFLUXDB_HOST); // port defaults to 8086
+// influx.setDbAuth('aqaurium', INFLUXDB_USER, INFLUXDB_PASS);
 
+ //if used with authentication
+// #include "credentials.h"
 
 // EEPROM
 int EEPROMSize = 512;

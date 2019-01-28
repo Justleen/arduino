@@ -10,6 +10,20 @@ void writeEEPROM(float input, int addr)
   Serial.println(addr);
 }
 
+void writeinflux(  String device, float value)
+{
+  InfluxData row("aquarium");
+  row.addTag("device", device);
+  // row.addTag("sensor", "one");
+  // row.addTag("mode", "pwm");
+  // row.addValue("loopCount", loopCount);
+  row.addValue(device, value);
+
+  influx.write(row);
+  Serial.print("wrote to influx:");
+  Serial.println(device);
+}
+
 float readEEPROM(int addr)
 {
   float value;
@@ -67,17 +81,24 @@ float getpH()
   for (int i=0; i <= int(ArrayLenth); i++)
   {
       // pHArray[pHArrayIndex++]=analogRead(SensorPin);
-      pHArray[pHArrayIndex++]=ads.readADC_SingleEnded(0);;
+      pHArray[pHArrayIndex++]=ads.readADC_SingleEnded(0);
 
 
       if(pHArrayIndex==ArrayLenth)pHArrayIndex=0;
       // voltage = avergearray(pHArray, ArrayLenth)*3.2/1023;
-      voltage = (avergearray(pHArray, ArrayLenth)*3.2)/1000;
+      raw = avergearray(pHArray, ArrayLenth);
+      voltage = (raw * gainFactor)/1000;
 
 
       // pHx = pH1 + (Ex – E1)*(pH2 – pH1)/(E2-E1)
-      // pHValue = sampleOne + (y - voltsampleOne ) * (sampleTwo - sampleOne) / ( voltsampleTwo - voltpHSeven)
-      pHValue =  22.06  - 6  * voltage;
+      // pHOne == shortciruit pH 7
+      // phTwo == Calibration liquid pH 4
+      // VpHOne == shortciruit voltage 
+      // VphTwo == voltage Calibration liquid
+      // pHValue = pHOne + (y - VpHOne ) * (phTwo - pHOne) / ( VphTwo - VpHOne)
+
+   
+      pHValue = 7 - 5.80159 * (voltage - 2.5179);
       delay(int(samplingInterval));
   }
   // return pHValue;
@@ -110,7 +131,7 @@ void drawDisplay(float temperature, float pHValue, float voltage, int WiFiStatus
     u8g2.setCursor(0, 30);
     u8g2.print(F("Voltage"));
     u8g2.setCursor(64, 30);
-    u8g2.print(voltage, digits);
+    u8g2.print(voltage, 4);
     
     // Temp
 
