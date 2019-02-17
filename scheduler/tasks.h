@@ -7,6 +7,7 @@ void temperatureCallback();
 void pHCallback();
 void displayCallback();
 void influxCallback();
+void OTACallback();
 
 Scheduler runner;
 //Tasks
@@ -14,7 +15,13 @@ Task pH(10000, TASK_FOREVER, &pHCallback, &runner, true);
 Task Display(5000, TASK_FOREVER, &displayCallback,  &runner, true);
 Task Temp(10000,  TASK_FOREVER, &temperatureCallback,  &runner, true);
 Task WiFiConnect(10000, TASK_FOREVER, &WiFiCallback,  &runner, true);
+Task OTA(1000, TASK_FOREVER, &OTACallback);
 Task NTP(NTPDELAY,  TASK_FOREVER, &NTPCallback);
+
+void OTACallback()
+{
+	ArduinoOTA.handle();
+}
 
 
 void pHCallback()
@@ -38,7 +45,7 @@ void temperatureCallback()
   temperature = sensors.getTempCByIndex(0);
   Serial.print("temperature is: ");
   Serial.println(temperature);
-  writeinflux("temperature", temperature);
+  writeinflux("value", temperature);
 
 }
 
@@ -116,7 +123,10 @@ void WiFiCallback()
   } else {
     Serial.println(WiFi.localIP());
     runner.addTask(NTP);
+    runner.addTask(OTA);
+    
     NTP.enable();
+    OTA.enable();
     runner.deleteTask(WiFiConnect);
     }
 }

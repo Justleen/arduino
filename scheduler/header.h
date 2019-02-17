@@ -13,11 +13,17 @@
 #include <coredecls.h>                  // settimeofday_cb()
 #include <InfluxDb.h>
 
+#include <ESP8266mDNS.h>
+#include <ArduinoOTA.h>
+
+
 //ADS1115
 Adafruit_ADS1115 ads;
 float gainFactor = 0.125;
 
-
+// lights
+#define whiteLED D6
+#define blinkLEDdelay  500
  
 //WiFi
 #ifndef STASSID
@@ -88,3 +94,5 @@ struct EEPROMObject {
   float voltage;
   char name[10];
 };
+
+

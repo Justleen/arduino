@@ -12,16 +12,18 @@ void writeEEPROM(float input, int addr)
 
 void writeinflux(  String device, float value)
 {
-  InfluxData row("aquarium");
-  row.addTag("device", device);
-  // row.addTag("sensor", "one");
-  // row.addTag("mode", "pwm");
-  // row.addValue("loopCount", loopCount);
-  row.addValue(device, value);
+  if (WiFi.status() == WL_CONNECTED) {
+    InfluxData row("aquarium");
+    row.addTag("device", device);
+    // row.addTag("sensor", "one");
+    // row.addTag("mode", "pwm");
+    // row.addValue("loopCount", loopCount);
+    row.addValue(device, value);
 
-  influx.write(row);
-  Serial.print("wrote to influx:");
-  Serial.println(device);
+    influx.write(row);
+    Serial.print("wrote to influx:");
+    Serial.println(device);
+  }
 }
 
 float readEEPROM(int addr)
@@ -188,4 +190,19 @@ void connectWiFi()
   /* Explicitly set the ESP8266 to be a WiFi-client, otherwise, it by default,
      would try to act as both a client and an access-point and could cause
      network-issues with your other WiFi-devices on your WiFi-network. */
+}
+
+void blinkLED()
+{
+  analogWrite(whiteLED, 50);
+  delay(blinkLEDdelay);
+  analogWrite(whiteLED, 0);
+  delay(blinkLEDdelay);
+
+  analogWrite(whiteLED, 50);
+  delay(blinkLEDdelay);
+  analogWrite(whiteLED, 0);
+  delay(blinkLEDdelay);
+
+
 }
