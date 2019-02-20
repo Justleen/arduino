@@ -21,6 +21,16 @@ bool handleFileRead(String path) { // send the right file to the client (if it e
   return false;                                         // If the file doesn't exist, return false
 }
 
+void handleLight(){
+  if (server.arg("On")!= ""){
+      analogWrite(whiteLED, 255);
+  }  if (server.arg("Off")!= ""){
+      analogWrite(whiteLED, 0);
+  }
+
+ 
+}
+
 
 void handleFileUpload(){ // upload a new file to the SPIFFS
   HTTPUpload& upload = server.upload();

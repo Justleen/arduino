@@ -8,6 +8,7 @@ void displayCallback();
 void influxCallback();
 void OTACallback();
 void WEBServerCallback();
+void WEBClientCallback();
 
 Scheduler runner;
 //Tasks
@@ -17,12 +18,14 @@ Task Temp(10000,  TASK_FOREVER, &temperatureCallback,  &runner, true);
 Task WiFiConnect(10000, TASK_FOREVER, &WiFiCallback,  &runner, true);
 Task OTA(1000, TASK_FOREVER, &OTACallback);
 Task NTP(NTPDELAY,  TASK_FOREVER, &NTPCallback);
-Task WEBServer(NTPDELAY,  1, &WEBServerCallback);
+Task WEBServer(1000,  1, &WEBServerCallback);
 
 void OTACallback()
 {
 	ArduinoOTA.handle();
 }
+
+
 
 void WEBServerCallback()
 {
@@ -36,13 +39,15 @@ void WEBServerCallback()
 	handleFileUpload                                    // Receive and save the file
 	);
 
+  server.on("/light", handleLight);
+
 	server.onNotFound([]() {                              // If the client requests any URI
 	if (!handleFileRead(server.uri()))                  // send it if it exists
 		server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
 	});
 	server.begin();
 	Serial.println("HTTP server started");
-	
+
 }
 
 void pHCallback()
@@ -126,13 +131,6 @@ void NTPCallback()
   Serial.print("mn)");
   Serial.print(ctime(&now));
 
-  // if no wifi, stop ntping
- // }
- // else {
- // 	runner.addTask(WiFiConnect);
- // 	WiFiConnect.enable();
- // 	runner.deleteTask(NTP);
- // }
 }
 
 
