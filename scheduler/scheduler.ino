@@ -5,7 +5,9 @@
  
 #include "header.h"
 #include "functions.h"
+#include "webhandlers.h"
 #include "tasks.h"
+
 
 
 
@@ -32,14 +34,6 @@ void setup ()
   // lights
   pinMode(whiteLED, OUTPUT);
   analogWrite(whiteLED, 255);
-
-  // eeprom test stuff
-  int addr = 0;
-  float pHValueEEPROM = readEEPROM(addr);
-  if ( pHValueEEPROM != 7.0 )
-  {
-    writeEEPROM(7.0, addr);
-  }
 
 
   // OTA over the air updates
@@ -82,11 +76,16 @@ void setup ()
   });
    
   ArduinoOTA.begin();
+  SPIFFS.begin();
+
+
 
 }
 
 void loop ()
 {
   runner.execute();
+  server.handleClient();
+  MDNS.update();
 
 }

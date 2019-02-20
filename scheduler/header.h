@@ -15,7 +15,15 @@
 
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
+#include <FS.h>
 
+
+#include <ESP8266WebServer.h>
+ESP8266WebServer server(80);
+File fsUploadFile;              // a File object to temporarily store the received file
+String getContentType(String filename); // convert the file extension to the MIME type
+bool handleFileRead(String path);       // send the right file to the client (if it exists)
+void handleFileUpload();                // upload a new file to the SPIFFS
 
 //ADS1115
 Adafruit_ADS1115 ads;

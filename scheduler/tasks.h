@@ -1,5 +1,4 @@
 
-
 // contstruct callbacks
 void WiFiCallback();
 void NTPCallback();
@@ -8,6 +7,7 @@ void pHCallback();
 void displayCallback();
 void influxCallback();
 void OTACallback();
+void WEBServerCallback();
 
 Scheduler runner;
 //Tasks
@@ -17,12 +17,33 @@ Task Temp(10000,  TASK_FOREVER, &temperatureCallback,  &runner, true);
 Task WiFiConnect(10000, TASK_FOREVER, &WiFiCallback,  &runner, true);
 Task OTA(1000, TASK_FOREVER, &OTACallback);
 Task NTP(NTPDELAY,  TASK_FOREVER, &NTPCallback);
+Task WEBServer(NTPDELAY,  1, &WEBServerCallback);
 
 void OTACallback()
 {
 	ArduinoOTA.handle();
 }
 
+void WEBServerCallback()
+{
+	server.on("/upload", HTTP_GET, []() {                 // if the client requests the upload page
+	if (!handleFileRead("/upload.html"))                // send it if it exists
+		server.send(404, "text/plain", "404: Uploader not Found"); // otherwise, respond with a 404 (Not Found) error
+	});
+
+	server.on("/upload", HTTP_POST,                       // if the client posts to the upload page
+	[](){ server.send(200); },                          // Send status 200 (OK) to tell the client we are ready to receive
+	handleFileUpload                                    // Receive and save the file
+	);
+
+	server.onNotFound([]() {                              // If the client requests any URI
+	if (!handleFileRead(server.uri()))                  // send it if it exists
+		server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
+	});
+	server.begin();
+	Serial.println("HTTP server started");
+	
+}
 
 void pHCallback()
 {
@@ -66,13 +87,13 @@ void NTPCallback()
   // localtime / gmtime every second change
   static time_t lastv = 0;
   // if (lastv != tv.tv_sec) {
-    lastv = tv.tv_sec;
-    Serial.println();
-    printTm("localtime", localtime(&now));
-    Serial.println();
-    printTm("gmtime   ", gmtime(&now));
-    Serial.println();
-    Serial.println();
+	lastv = tv.tv_sec;
+	Serial.println();
+	printTm("localtime", localtime(&now));
+	Serial.println();
+	printTm("gmtime   ", gmtime(&now));
+	Serial.println();
+	Serial.println();
   // }
 
   // time from boot
@@ -118,17 +139,24 @@ void NTPCallback()
 void WiFiCallback()
 {
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("no wifi, connecting");
-    connectWiFi();
+	Serial.println("no wifi, connecting");
+	connectWiFi();
   } else {
-    Serial.println(WiFi.localIP());
-    runner.addTask(NTP);
-    runner.addTask(OTA);
-    
-    NTP.enable();
-    OTA.enable();
-    runner.deleteTask(WiFiConnect);
-    }
+	Serial.println(WiFi.localIP());
+	runner.addTask(NTP);
+	runner.addTask(OTA);
+	runner.addTask(WEBServer);
+  if (MDNS.begin("esp8266")) {
+	Serial.println("MDNS responder started");
+  }
+
+
+	NTP.enable();
+	OTA.enable();
+	WEBServer.enable();
+	runner.deleteTask(WiFiConnect);
+
+	}
 }
 
 void readEEPROMCallback()
