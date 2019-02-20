@@ -1,9 +1,11 @@
 <form>
 	<label for="background-color">Choose a color for background :</label>
 	<input type="color" id="background-color" />
-	<button type="button" action="LEDOFF">Off</button>
-	<button type="button" action="LEDON">On</button>
+	<input type="button" onclick="window.location.href = '/light';" value="On" />
+	<input type="button" onclick="window.location.href = '/light';" value="Off" />
 	<h1>Hello from ESP8266!!!</h1>
-	<a href="upload.html">File Upload </a>
+	<a href="upload.html">File Upload </a><br>
+	<a href="/on">On</a><br>
+	<a href="/off">Off</a><br>
 </form>
 

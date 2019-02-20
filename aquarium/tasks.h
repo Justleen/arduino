@@ -39,7 +39,8 @@ void WEBServerCallback()
 	handleFileUpload                                    // Receive and save the file
 	);
 
-  server.on("/light", handleLight);
+  server.on("/on", handleLightOn);
+  server.on("/off", handleLightOff);
 
 	server.onNotFound([]() {                              // If the client requests any URI
 	if (!handleFileRead(server.uri()))                  // send it if it exists
