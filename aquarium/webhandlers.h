@@ -23,14 +23,21 @@ bool handleFileRead(String path) { // send the right file to the client (if it e
 
 void handleLightOn()
 {
-  server.send(200, "text/plain", "LED on");
-  digitalWrite(LED_BUILTIN, HIGH);
+ Serial.println("LED on page");
+ for (int i=0; i<10; i++){
+   digitalWrite(2,LOW); //LED is connected in reverse
+    delay(1000);
+    digitalWrite(2,HIGH); //LED is connected in reverse
+    delay(1000);
+ }
+ server.send(200, "text/html", "LED is ON"); //Send ADC value only to client ajax request
 }
 
 void handleLightOff()
 {
-  server.send(200, "text/plain", "LED off");
-  digitalWrite(LED_BUILTIN, LOW);
+ Serial.println("LED off page");
+ digitalWrite(2,HIGH); //LED off
+ server.send(200, "text/html", "LED is OFF"); //Send ADC value only to client ajax request
 }
 
 

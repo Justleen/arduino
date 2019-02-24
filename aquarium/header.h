@@ -17,6 +17,7 @@
 #include <ArduinoOTA.h>
 #include <FS.h>
 
+
 // weberserver
 #include <ESP8266WebServer.h>
 ESP8266WebServer server(80);
@@ -33,14 +34,7 @@ float gainFactor = 0.125;
 #define whiteLED D6
 #define blinkLEDdelay  500
  
-//WiFi
-#ifndef STASSID
-#define STASSID "koepelnet"
-#define STAPSK  "fluffy22"
-#endif
-const char* ssid     = STASSID;
-const char* password = STAPSK;
-int WiFiStatus = 0;
+
 
 
 //NTP

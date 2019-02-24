@@ -2,14 +2,15 @@
 * reads pH Meter
 * updates display
  */
- 
+
+#include "credentials.h"
 #include "header.h"
 #include "functions.h"
 #include "webhandlers.h"
 #include "tasks.h"
 
 
-
+#define LED 2
 
 void setup () 
 {
@@ -32,6 +33,7 @@ void setup ()
   // runner.init();
   
   // lights
+  pinMode(LED, OUTPUT);     // Initialize the LED_BUILTIN pin as an output
   pinMode(whiteLED, OUTPUT);
   analogWrite(whiteLED, 255);
 
@@ -78,7 +80,9 @@ void setup ()
   ArduinoOTA.begin();
   SPIFFS.begin();
 
-
+  digitalWrite(LED, LOW);
+  delay(1000);
+  digitalWrite(LED, HIGH);
 
 }
 
