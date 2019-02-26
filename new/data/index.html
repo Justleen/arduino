@@ -1,11 +1,22 @@
+<script src="WebSocket.js" type="text/javascript"></script>
+
+<label for="background-color">Choose a color for background :</label>
+<input type="color" id="colorWell" oninput="sendRGB(); /><br>
+
 <form>
-	<label for="background-color">Choose a color for background :</label>
-	<input type="color" id="background-color" />
-	<input type="button" onclick="window.location.href = '/on';" value="on" />
-	<input type="button" onclick="window.location.href = '/off';" value="off" />
 	<h1>Hello from ESP8266!!!</h1>
-	<a href="upload.html">File Upload </a><br>
-	<a href="/on">On</a><br>
-	<a href="/off">Off</a><br>
+	<a href="upload">File Upload </a><br>
+
+	<input type="button"  name='on_state' onclick="window.location.href = '/light?state=on';" value="On" />
+	<input type="button"  name='off_state' onclick="window.location.href = '/light?state=off';" value="Off" />
+
 </form>
+
+
+<p>Watch the paragraph colors change when you adjust the color picker.
+   As you make changes in the color picker, the first paragraph's
+   color changes, as a preview (this uses the <code>input</code>
+   event). When you close the color picker, the <code>change</code>
+   event fires, and we detect that to change every paragraph to
+   the selected color.</p>
 

@@ -1,17 +1,21 @@
 
 #include <ESP8266WebServer.h>
+#include <WebSocketsServer.h>
 
-void WEBServerCallback();
-Task WEBServer(1000,  1, &WEBServerCallback);
+// void WEBServerCallback();
+// Task WEBServer(1000,  1, &WEBServerCallback);
 
 // webserver
 ESP8266WebServer server(80);
-
+WebSocketsServer webSocket(81);    // create a websocket server on port 81
 
 String getContentType(String filename); // convert the file extension to the MIME type
 bool handleFileRead(String path);       // send the right file to the client (if it exists)
 void handleFileUpload();                // upload a new file to the SPIFFS
-
+bool rainbow = false;             // The rainbow effect is turned off on startup
+#define LED_RED     15            // specify the pins with an RGB LED connected
+#define LED_GREEN   12
+#define LED_BLUE    13
 
 String getContentType(String filename) { // convert the file extension to the MIME type
   if (filename.endsWith(".html")) return "text/html";
@@ -20,6 +24,50 @@ String getContentType(String filename) { // convert the file extension to the MI
   else if (filename.endsWith(".ico")) return "image/x-icon";
   return "text/plain";
 }
+
+
+// void WEBServerCallback()
+// {
+
+// }
+
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) { // When a WebSocket message is received
+  switch (type) {
+    case WStype_DISCONNECTED:             // if the websocket is disconnected
+      Serial.printf("[%u] Disconnected!\n", num);
+      break;
+    case WStype_CONNECTED: {              // if a new websocket connection is established
+        IPAddress ip = webSocket.remoteIP(num);
+        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+        rainbow = false;                  // Turn rainbow off when a new connection is established
+      }
+      break;
+    case WStype_TEXT:                     // if new text data is received
+      Serial.printf("[%u] get Text: %s\n", num, payload);
+      if (payload[0] == '#') {            // we get RGB data
+        uint32_t rgb = (uint32_t) strtol((const char *) &payload[1], NULL, 16);   // decode rgb data
+        int r = ((rgb >> 20) & 0x3FF);                     // 10 bits per color, so R: bits 20-29
+        int g = ((rgb >> 10) & 0x3FF);                     // G: bits 10-19
+        int b =          rgb & 0x3FF;                      // B: bits  0-9
+
+        analogWrite(LED_RED,   r);                         // write it to the LED output pins
+        analogWrite(LED_GREEN, g);
+        analogWrite(LED_BLUE,  b);
+      } else if (payload[0] == 'R') {                      // the browser sends an R when the rainbow effect is enabled
+        rainbow = true;
+      } else if (payload[0] == 'N') {                      // the browser sends an N when the rainbow effect is disabled
+        rainbow = false;
+      }
+      break;
+  }
+}
+
+void startWebSocket() { // Start a WebSocket server
+  webSocket.begin();                          // start the websocket server
+  webSocket.onEvent(webSocketEvent);          // if there's an incomming websocket message, go to function 'webSocketEvent'
+  Serial.println("WebSocket server started.");
+}
+
 
 bool handleFileRead(String path) { // send the right file to the client (if it exists)
   Serial.println("handleFileRead: " + path);
@@ -63,40 +111,27 @@ void handleFileUpload(){ // upload a new file to the SPIFFS
   }
 }
 
-void handleLightOn()
-{
-	Serial.println("LED on page");
-	server.send(200, "text/html", "LED is ON"); //Send ADC value only to client ajax request
-	digitalWrite(LED_BUILTIN,LOW); //LED is connected in reverse
-}
 
-void handleLightOff()
-{
-	Serial.println("LED off page");
+void handleLight() { //Handler
+
+String message = "Number of args received:";
+message += server.args();            //Get number of parameters
+message += "\n";                            //Add a new line
+
+for (int i = 0; i < server.args(); i++) {
+
+message += "Arg Number" + String(i) + " -> ";   //Include the current iteration value
+message += server.argName(i) + ": ";     //Get the name of the parameter
+message += server.arg(i) + "\n";              //Get the value of the parameter
+
+} 
+if ( server.arg("state") == "on") {
+	digitalWrite(LED_BUILTIN,LOW); //LED off
+}
+if ( server.arg("state") == "off") {
 	digitalWrite(LED_BUILTIN,HIGH); //LED off
-	server.send(200, "text/html", "LED is OFF"); //Send ADC value only to client ajax request
 }
 
-void WEBServerCallback()
-{
-  server.on("/upload", HTTP_GET, []() {                 // if the client requests the upload page
-	if (!handleFileRead("/upload.html"))                // send it if it exists
-	  server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
-  });
-
-  server.on("/upload", HTTP_POST,                       // if the client posts to the upload page
-	[](){ server.send(200); },                          // Send status 200 (OK) to tell the client we are ready to receive
-	handleFileUpload                                    // Receive and save the file
-  );
-
-	server.on("/on", handleLightOn);
-	server.on("/off", handleLightOff);
-
-	server.onNotFound([]() {                              // If the client requests any URI
-	if (!handleFileRead(server.uri()))                  // send it if it exists
-		server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
-	});
-	server.begin();
-	Serial.println("HTTP server started");
+server.send(200, "text/plain", message);       //Response to the HTTP request
 
 }

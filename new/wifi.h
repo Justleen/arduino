@@ -28,8 +28,8 @@ void WiFiCallback()
 	Serial.println(WiFi.localIP());
 	// runner.deleteTask(WiFiConnect);
 
-	runner.addTask(WEBServer);
-	WEBServer.enable();
+	// runner.addTask(WEBServer);
+	// WEBServer.enable();
 
 	}
 }
